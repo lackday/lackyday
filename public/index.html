@@ -1,1 +1,158 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Global Draw — Daily Lottery</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast hidden"></div>
 
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="page hidden">
+    <div class="auth-wrap">
+      <div class="auth-left">
+        <div class="logo-row"><div class="logo-ball">★</div><span class="logo-text">GLOBAL DRAW</span></div>
+        <h1>One draw a day. Everyone's invited.</h1>
+        <p class="sub">Virtual-coin prototype — no real money changes hands here. Register, pick six numbers from 1–49, and watch the daily draw.</p>
+        <div class="jackpot-card">
+          <span class="label">Current jackpot</span>
+          <span id="jackpotAmountAuth" class="amount">—</span>
+        </div>
+      </div>
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button id="tabLogin" class="tab-active">Log in</button>
+          <button id="tabRegister" class="tab">Create account</button>
+        </div>
+        <form id="authForm">
+          <label>Username<input id="username" autocomplete="username" placeholder="e.g. luckystar" /></label>
+          <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="••••••••" /></label>
+          <div id="adminCodeWrap" class="hidden">
+            <label>Admin invite code (optional)<input id="adminCode" placeholder="Leave blank for a regular account" /></label>
+          </div>
+          <button type="button" id="showAdminCodeLink" class="link-btn hidden">Have an admin invite code?</button>
+          <div id="authError" class="auth-error hidden"></div>
+          <button type="submit" class="primary-btn" id="authSubmit">Log in</button>
+        </form>
+        <p id="registerNote" class="fine-print hidden">New accounts start with a starting coin balance and need admin approval before playing.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="appScreen" class="page hidden">
+    <header class="header">
+      <div class="logo-row"><div class="logo-ball">★</div><span class="logo-text">GLOBAL DRAW</span></div>
+      <div class="header-right">
+        <div class="balance-pill"><span class="dot"></span><span id="balanceText">0 coins</span></div>
+        <span id="userTag" class="user-tag"></span>
+        <button id="logoutBtn" class="logout-btn">Log out</button>
+      </div>
+    </header>
+
+    <div class="banner">Prototype only — virtual coins, not real currency.</div>
+
+    <div id="pendingNotice" class="main hidden">
+      <div class="card">
+        <h2>Waiting on approval</h2>
+        <p class="sub">Your account has been created but an admin needs to approve it before you can buy tickets. Check back soon.</p>
+      </div>
+    </div>
+
+    <div id="mainNav" class="nav hidden">
+      <button class="tab-item tab-active" data-tab="play">Play</button>
+      <button class="tab-item" data-tab="tickets">My tickets</button>
+      <button class="tab-item" data-tab="wallet">Wallet</button>
+      <button class="tab-item" data-tab="results">Results</button>
+      <button class="tab-item hidden" id="adminTabBtn" data-tab="admin">Admin</button>
+    </div>
+
+    <main id="mainContent" class="main hidden">
+      <section id="tab-play" class="tab-panel">
+        <div class="play-grid">
+          <div class="card">
+            <div class="card-head-row">
+              <h2 id="drawTitle">Draw</h2>
+              <div class="countdown">Closes in <span id="countdown" class="countdown-num">--:--:--</span></div>
+            </div>
+            <p class="sub">Pick 6 numbers from 1–49, or let the machine pick for you.</p>
+            <div id="numberGrid" class="number-grid"></div>
+            <div class="play-footer">
+              <div id="picksRow" class="picks-row"></div>
+              <div class="play-actions">
+                <button id="quickPickBtn" class="secondary-btn">Quick pick</button>
+                <button id="clearBtn" class="secondary-btn">Clear</button>
+                <button id="buyBtn" class="primary-btn" disabled>Buy ticket</button>
+              </div>
+            </div>
+          </div>
+          <div class="side-col">
+            <div class="jackpot-card-small">
+              <span class="label">Jackpot</span>
+              <span id="jackpotAmountApp" class="amount-lg">—</span>
+              <span class="unit">coins</span>
+            </div>
+            <div class="card">
+              <h3>Prize tiers</h3>
+              <ul class="tier-list">
+                <li><b>6 matches</b> — full jackpot</li>
+                <li><b>5 matches</b> — 200 coins</li>
+                <li><b>4 matches</b> — 50 coins</li>
+                <li><b>3 matches</b> — 10 coins</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-tickets" class="tab-panel hidden">
+        <div class="card">
+          <h2>My tickets</h2>
+          <div id="ticketList" class="row-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-wallet" class="tab-panel hidden">
+        <div class="card">
+          <h2>Request a top-up</h2>
+          <p class="sub">Ask an admin to add coins to your balance. Requests need admin approval.</p>
+          <div class="play-actions" style="margin-top:14px;">
+            <input id="topupAmountInput" class="admin-input" style="width:140px;" placeholder="e.g. 200" />
+            <button id="topupRequestBtn" class="primary-btn">Send request</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>My requests</h2>
+          <div id="myTopupList" class="row-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-results" class="tab-panel hidden">
+        <div class="card">
+          <h2>Past draws</h2>
+          <div id="drawList" class="row-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-admin" class="tab-panel hidden">
+        <div class="card">
+          <h2>Top-up requests</h2>
+          <div id="topupRequestList" class="row-list"></div>
+        </div>
+        <div class="card">
+          <h2>Pending approvals</h2>
+          <div id="pendingList" class="row-list"></div>
+        </div>
+        <div class="card">
+          <h2>All users</h2>
+          <div id="userList" class="row-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
