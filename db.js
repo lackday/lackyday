@@ -7,6 +7,7 @@ function load() {
   if (!fs.existsSync(DB_PATH)) {
     const initial = {
       users: {},
+      mobileIndex: {},
       ticketsByDate: {},
       draws: {},
       jackpot: 1000,
@@ -19,6 +20,7 @@ function load() {
   }
   const state = JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
   if (!state.topupRequests) state.topupRequests = [];
+  if (!state.mobileIndex) state.mobileIndex = {};
   return state;
 }
 
@@ -34,7 +36,12 @@ module.exports = {
   },
   saveUser(user) {
     state.users[user.username] = user;
+    if (user.mobile) state.mobileIndex[user.mobile] = user.username;
     save();
+  },
+  getUserByMobile(mobile) {
+    const username = state.mobileIndex[mobile];
+    return username ? state.users[username] || null : null;
   },
   getAllUsers() {
     return Object.values(state.users);
