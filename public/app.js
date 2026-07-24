@@ -42,21 +42,32 @@ function setAuthMode(mode) {
   document.getElementById("showAdminCodeLink").classList.toggle("hidden", mode !== "register");
   document.getElementById("adminCodeWrap").classList.add("hidden");
   document.getElementById("authError").classList.add("hidden");
+  document.getElementById("nameField").classList.toggle("hidden", mode !== "register");
+  document.getElementById("mobileField").classList.toggle("hidden", mode !== "register");
+  document.getElementById("emailField").classList.toggle("hidden", mode !== "register");
+  document.getElementById("identifierField").classList.toggle("hidden", mode !== "login");
 }
 
 document.getElementById("authForm").onsubmit = async (e) => {
   e.preventDefault();
-  const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
-  const adminCode = document.getElementById("adminCode").value;
   const errEl = document.getElementById("authError");
   errEl.classList.add("hidden");
   try {
-    const body = state.authMode === "login" ? { username, password } : { username, password, adminCode };
-    const data = await api(state.authMode === "login" ? "/api/login" : "/api/register", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
+    let body, endpoint;
+    if (state.authMode === "login") {
+      const identifier = document.getElementById("identifier").value;
+      body = { identifier, password };
+      endpoint = "/api/login";
+    } else {
+      const name = document.getElementById("fullName").value;
+      const mobile = document.getElementById("mobile").value;
+      const email = document.getElementById("email").value;
+      const adminCode = document.getElementById("adminCode").value;
+      body = { name, mobile, email, password, adminCode };
+      endpoint = "/api/register";
+    }
+    const data = await api(endpoint, { method: "POST", body: JSON.stringify(body) });
     state.token = data.token;
     state.user = data.user;
     localStorage.setItem("gd_token", data.token);
@@ -106,7 +117,7 @@ async function refreshMe() {
   const data = await api("/api/me");
   state.user = data.user;
   document.getElementById("balanceText").textContent = data.user.balance.toLocaleString() + " coins";
-  document.getElementById("userTag").textContent = "@" + data.user.username;
+  document.getElementById("userTag").textContent = data.user.name ? data.user.name : "@" + data.user.username;
 }
 
 async function loadServerState() {
@@ -306,7 +317,7 @@ async function loadAdmin() {
       const row = document.createElement("div");
       row.className = "row";
       const date = new Date(r.createdAt).toLocaleString();
-      row.innerHTML = `<div class="date">@${r.username}</div><div class="empty-state">${r.amount.toLocaleString()} coins · ${date}</div>`;
+      row.innerHTML = `<div class="date">${r.username}</div><div class="empty-state">${r.amount.toLocaleString()} coins · ${date}</div>`;
       const wrap = document.createElement("div");
       wrap.style.display = "flex";
       wrap.style.gap = "8px";
@@ -341,7 +352,7 @@ async function loadAdmin() {
     pending.users.forEach((u) => {
       const row = document.createElement("div");
       row.className = "row";
-      row.innerHTML = `<div class="date">@${u.username}</div><div class="empty-state">${u.balance.toLocaleString()} coins</div>`;
+      row.innerHTML = `<div class="date">${u.name || u.username}</div><div class="empty-state">${u.balance.toLocaleString()} coins</div>`;
       const btn = document.createElement("button");
       btn.className = "secondary-btn";
       btn.textContent = "Approve";
@@ -360,7 +371,7 @@ async function loadAdmin() {
   all.users.forEach((u) => {
     const row = document.createElement("div");
     row.className = "row";
-    row.innerHTML = `<div class="date">@${u.username} <span class="empty-state">· ${u.role}</span></div><div class="empty-state">${u.balance.toLocaleString()} coins</div>`;
+    row.innerHTML = `<div class="date">${u.name || u.username} <span class="empty-state">· ${u.role}</span></div><div class="empty-state">${u.balance.toLocaleString()} coins</div>`;
     const wrap = document.createElement("div");
     wrap.style.display = "flex";
     wrap.style.gap = "8px";
