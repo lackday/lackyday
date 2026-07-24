@@ -27,7 +27,10 @@
           <button id="tabRegister" class="tab">Create account</button>
         </div>
         <form id="authForm">
-          <label>Username<input id="username" autocomplete="username" placeholder="e.g. luckystar" /></label>
+          <label id="nameField" class="hidden">Full name<input id="fullName" autocomplete="name" placeholder="e.g. Kamrul Hasan" /></label>
+          <label id="mobileField" class="hidden">Mobile number<input id="mobile" autocomplete="tel" placeholder="e.g. 017XXXXXXXX" /></label>
+          <label id="emailField" class="hidden">Email<input id="email" type="email" autocomplete="email" placeholder="e.g. name@example.com" /></label>
+          <label id="identifierField">Mobile or email<input id="identifier" autocomplete="username" placeholder="Mobile number or email" /></label>
           <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="••••••••" /></label>
           <div id="adminCodeWrap" class="hidden">
             <label>Admin invite code (optional)<input id="adminCode" placeholder="Leave blank for a regular account" /></label>
