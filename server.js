@@ -71,7 +71,13 @@ function adminOnly(req, res, next) {
   next();
 }
 function publicUser(u) {
-  return { username: u.username, balance: u.balance, role: u.role };
+  return { username: u.username, name: u.name, mobile: u.mobile, email: u.email, balance: u.balance, role: u.role };
+}
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+function isValidMobile(s) {
+  return /^[0-9+][0-9 -]{6,17}$/.test(s);
 }
 
 /* ---------------------------- draw engine ---------------------------- */
@@ -147,35 +153,45 @@ function processDueDraws() {
 
 /* ---------------------------- auth routes ---------------------------- */
 app.post("/api/register", (req, res) => {
-  const { username, password, adminCode } = req.body || {};
-  const uname = (username || "").trim().toLowerCase();
-  if (uname.length < 3) return res.status(400).json({ error: "Username needs at least 3 characters." });
+  const { name, mobile, email, password, adminCode } = req.body || {};
+  const cleanName = (name || "").trim();
+  const cleanMobile = (mobile || "").trim();
+  const cleanEmail = (email || "").trim().toLowerCase();
+
+  if (cleanName.length < 2) return res.status(400).json({ error: "Enter your full name." });
+  if (!isValidMobile(cleanMobile)) return res.status(400).json({ error: "Enter a valid mobile number." });
+  if (!isValidEmail(cleanEmail)) return res.status(400).json({ error: "Enter a valid email address." });
   if (!password || password.length < 4) return res.status(400).json({ error: "Password needs at least 4 characters." });
-  if (db.getUser(uname)) return res.status(400).json({ error: "That username is taken." });
+  if (db.getUser(cleanEmail)) return res.status(400).json({ error: "An account with that email already exists." });
+  if (db.getUserByMobile(cleanMobile)) return res.status(400).json({ error: "An account with that mobile number already exists." });
+
   let role = "pending";
   if (adminCode) {
     if (adminCode !== ADMIN_CODE) return res.status(400).json({ error: "Invalid admin code." });
     role = "admin";
   }
   const user = {
-    username: uname,
+    username: cleanEmail,
+    name: cleanName,
+    mobile: cleanMobile,
+    email: cleanEmail,
     passHash: hashPassword(password),
     balance: START_BALANCE,
     role,
     createdAt: Date.now(),
   };
   db.saveUser(user);
-  res.json({ token: signToken({ username: uname }), user: publicUser(user) });
+  res.json({ token: signToken({ username: cleanEmail }), user: publicUser(user) });
 });
 
 app.post("/api/login", (req, res) => {
-  const { username, password } = req.body || {};
-  const uname = (username || "").trim().toLowerCase();
-  const user = db.getUser(uname);
+  const { identifier, password } = req.body || {};
+  const clean = (identifier || "").trim().toLowerCase();
+  const user = clean.includes("@") ? db.getUser(clean) : db.getUserByMobile((identifier || "").trim());
   if (!user || !verifyPassword(password || "", user.passHash)) {
-    return res.status(401).json({ error: "Incorrect username or password." });
+    return res.status(401).json({ error: "Incorrect mobile/email or password." });
   }
-  res.json({ token: signToken({ username: uname }), user: publicUser(user) });
+  res.json({ token: signToken({ username: user.username }), user: publicUser(user) });
 });
 
 app.get("/api/me", auth, (req, res) => {
