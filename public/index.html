@@ -11,6 +11,28 @@
 
   <!-- AUTH SCREEN -->
   <div id="authScreen" class="page hidden">
+    <div class="hero-slider" id="heroSlider">
+      <div class="hero-slide active" data-slide="0">
+        <span class="hero-eyebrow">GRAND PRIZE</span>
+        <h2 class="hero-slide-title">Win up to <span id="heroJackpotText">—</span> coins</h2>
+        <p class="hero-slide-sub">One draw a day. Everyone's invited.</p>
+      </div>
+      <div class="hero-slide" data-slide="1">
+        <span class="hero-eyebrow">HOW IT WORKS</span>
+        <h2 class="hero-slide-title">Pick 6 numbers from 1–49</h2>
+        <p class="hero-slide-sub">Quick pick, or choose your own lucky numbers.</p>
+      </div>
+      <div class="hero-slide" data-slide="2">
+        <span class="hero-eyebrow">DAILY DRAW</span>
+        <h2 class="hero-slide-title">A fresh draw every single day</h2>
+        <p class="hero-slide-sub">Winners are announced right here on Global Draw.</p>
+      </div>
+      <div class="hero-dots" id="heroDots">
+        <span class="hero-dot active" data-dot="0"></span>
+        <span class="hero-dot" data-dot="1"></span>
+        <span class="hero-dot" data-dot="2"></span>
+      </div>
+    </div>
     <div class="auth-wrap">
       <div class="auth-left">
         <div class="logo-row"><div class="logo-ball">★</div><span class="logo-text">GLOBAL DRAW</span></div>
@@ -33,7 +55,7 @@
               <div class="prize-balls">
                 <span class="mini-ball-gold">●</span><span class="mini-ball-gold">●</span><span class="mini-ball-gold">●</span><span class="mini-ball-gold">●</span><span class="mini-ball-gold">●</span><span class="mini-ball-muted">●</span>
               </div>
-              <div class="prize-amount">500,000 coins</div>
+              <div class="prize-amount">250,000 coins</div>
             </div>
             <div class="prize-row">
               <div class="prize-balls">
@@ -60,6 +82,12 @@
               <div class="prize-amount">100 coins</div>
             </div>
           </div>
+        </div>
+        <div class="card" id="authResultsCard" style="margin-top:20px; max-width:460px;">
+          <h3>Latest draw result</h3>
+          <div id="authResultDate" class="sub" style="margin-bottom:10px;"></div>
+          <div id="authResultBalls" style="display:flex; gap:6px; margin-bottom:14px;"></div>
+          <div id="authResultBreakdown" class="row-list"></div>
         </div>
       </div>
       <div class="auth-card">
