@@ -12,9 +12,9 @@ app.use(express.static(path.join(__dirname, "public")));
 const JWT_SECRET = process.env.JWT_SECRET || "CHANGE-ME-BEFORE-DEPLOYING";
 const ADMIN_CODE = process.env.ADMIN_CODE || "CHANGE-ME-ADMIN-CODE";
 const TICKET_COST = parseInt(process.env.TICKET_COST || "10", 10);
-const START_BALANCE = parseInt(process.env.START_BALANCE || "500", 10);
+const START_BALANCE = parseInt(process.env.START_BALANCE || "100", 10);
 const DRAW_HOUR_UTC = parseInt(process.env.DRAW_HOUR_UTC || "20", 10);
-const JACKPOT_BASE = parseInt(process.env.JACKPOT_BASE || "1000", 10);
+const JACKPOT_BASE = parseInt(process.env.JACKPOT_BASE || "10000000", 10);
 const JACKPOT_CONTRIB = parseInt(process.env.JACKPOT_CONTRIB || "5", 10);
 
 if (JWT_SECRET === "CHANGE-ME-BEFORE-DEPLOYING") {
@@ -98,9 +98,11 @@ function drawSixNumbers() {
 }
 function prizeForMatches(n) {
   if (n === 6) return { tier: "jackpot", amount: null };
-  if (n === 5) return { tier: "5", amount: 200 };
-  if (n === 4) return { tier: "4", amount: 50 };
-  if (n === 3) return { tier: "3", amount: 10 };
+  if (n === 5) return { tier: "5", amount: 500000 };
+  if (n === 4) return { tier: "4", amount: 50000 };
+  if (n === 3) return { tier: "3", amount: 20 };
+   if (n === 2) return { tier: "2", amount: 20 };
+   if (n === 1) return { tier: "1", amount: 20 };
   return { tier: null, amount: 0 };
 }
 function processDraw(dateStr) {
