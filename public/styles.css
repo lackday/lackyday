@@ -169,3 +169,15 @@ input:focus { border-color: var(--gold); background: var(--card); }
 .auth-tabs-float .auth-tabs {
   margin-bottom: 0; box-shadow: 0 14px 34px rgba(43,32,22,0.22); background: var(--card);
 }
+
+/* auth modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(43,32,22,0.55);
+  display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+}
+.auth-modal-card { max-width: 380px; width: 100%; position: relative; }
+.modal-close {
+  position: absolute; top: 14px; right: 14px; background: var(--cream); border: 1px solid var(--border);
+  width: 30px; height: 30px; border-radius: 50%; color: var(--ink); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 0;
+}
