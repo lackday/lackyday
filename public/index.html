@@ -119,6 +119,19 @@
 
       <section id="tab-wallet" class="tab-panel hidden">
         <div class="card">
+          <h2>Send coins</h2>
+          <p class="sub">Send coins directly to another user (or the admin) using their mobile number or email.</p>
+          <div class="play-actions" style="margin-top:14px; flex-wrap:wrap;">
+            <input id="sendRecipientInput" class="admin-input" style="width:200px;" placeholder="Recipient mobile or email" />
+            <input id="sendAmountInput" class="admin-input" style="width:120px;" placeholder="Amount" />
+            <button id="sendCoinsBtn" class="primary-btn">Send</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Transfer history</h2>
+          <div id="transferList" class="row-list"></div>
+        </div>
+        <div class="card">
           <h2>Request a top-up</h2>
           <p class="sub">Ask an admin to add coins to your balance. Requests need admin approval.</p>
           <div class="play-actions" style="margin-top:14px;">
