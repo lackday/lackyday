@@ -100,9 +100,9 @@ function prizeForMatches(n) {
   if (n === 6) return { tier: "jackpot", amount: null };
   if (n === 5) return { tier: "5", amount: 500000 };
   if (n === 4) return { tier: "4", amount: 50000 };
-  if (n === 3) return { tier: "3", amount: 20 };
-   if (n === 2) return { tier: "2", amount: 20 };
-   if (n === 1) return { tier: "1", amount: 20 };
+  if (n === 3) return { tier: "3", amount: 100 };
+   if (n === 2) return { tier: "2", amount: 100 };
+   if (n === 1) return { tier: "1", amount: 100 };
   return { tier: null, amount: 0 };
 }
 function processDraw(dateStr) {
