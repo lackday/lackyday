@@ -450,7 +450,52 @@ async function loadAdmin() {
   });
 }
 
+/* ---------------------------- hero slideshow ---------------------------- */
+let heroIndex = 0;
+const heroSlides = document.querySelectorAll(".hero-slide");
+const heroDots = document.querySelectorAll(".hero-dot");
+function showHeroSlide(i) {
+  heroIndex = (i + heroSlides.length) % heroSlides.length;
+  heroSlides.forEach((s, idx) => s.classList.toggle("active", idx === heroIndex));
+  heroDots.forEach((d, idx) => d.classList.toggle("active", idx === heroIndex));
+}
+heroDots.forEach((dot, idx) => {
+  dot.onclick = () => showHeroSlide(idx);
+});
+setInterval(() => showHeroSlide(heroIndex + 1), 4500);
+
 /* ---------------------------- boot ---------------------------- */
+async function loadAuthResults() {
+  try {
+    const data = await api("/api/draws");
+    const dateEl = document.getElementById("authResultDate");
+    const ballsEl = document.getElementById("authResultBalls");
+    const breakdownEl = document.getElementById("authResultBreakdown");
+    if (!data.draws || data.draws.length === 0) {
+      dateEl.textContent = "No draws have completed yet.";
+      ballsEl.innerHTML = "";
+      breakdownEl.innerHTML = "";
+      return;
+    }
+    const latest = data.draws[0];
+    dateEl.textContent = latest.date;
+    ballsEl.innerHTML = latest.winningNumbers.map((n) => `<span class="mini-ball-gold">${n}</span>`).join("");
+    const counts = { 6: 0, 5: 0, 4: 0, low: 0 };
+    (latest.winners || []).forEach((w) => {
+      if (w.matches === 6) counts[6]++;
+      else if (w.matches === 5) counts[5]++;
+      else if (w.matches === 4) counts[4]++;
+      else if (w.matches >= 1 && w.matches <= 3) counts.low++;
+    });
+    breakdownEl.innerHTML = `
+      <div class="row"><div class="date">Match 6</div><div class="empty-state">Winners</div><div>${counts[6]}</div></div>
+      <div class="row"><div class="date">Match 5</div><div class="empty-state">Winners</div><div>${counts[5]}</div></div>
+      <div class="row"><div class="date">Match 4</div><div class="empty-state">Winners</div><div>${counts[4]}</div></div>
+      <div class="row"><div class="date">Match 3, 2, 1</div><div class="empty-state">Winners</div><div>${counts.low}</div></div>
+    `;
+  } catch {}
+}
+
 (async function boot() {
   if (state.token) {
     try {
@@ -465,5 +510,8 @@ async function loadAdmin() {
   try {
     const j = await api("/api/jackpot");
     document.getElementById("jackpotAmountAuth").textContent = j.amount.toLocaleString() + " coins";
+    const heroJackpotEl = document.getElementById("heroJackpotText");
+    if (heroJackpotEl) heroJackpotEl.textContent = j.amount.toLocaleString();
   } catch {}
+  loadAuthResults();
 })();
