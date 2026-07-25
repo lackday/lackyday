@@ -244,6 +244,47 @@ app.post("/api/tickets", auth, (req, res) => {
   res.json({ ticket, user: publicUser(user) });
 });
 
+/* ---------------------------- user-to-user transfers ---------------------------- */
+app.post("/api/send", auth, (req, res) => {
+  const sender = db.getUser(req.username);
+  if (!sender) return res.status(404).json({ error: "Not found" });
+  if (sender.role === "pending") return res.status(403).json({ error: "Your account is awaiting admin approval." });
+
+  const { recipient, amount } = req.body || {};
+  const amt = parseInt(amount, 10);
+  if (!amt || amt <= 0) return res.status(400).json({ error: "Enter a valid amount." });
+
+  const cleanRecipient = (recipient || "").trim();
+  const target = cleanRecipient.includes("@")
+    ? db.getUser(cleanRecipient.toLowerCase())
+    : db.getUserByMobile(cleanRecipient);
+  if (!target) return res.status(404).json({ error: "No account found with that mobile or email." });
+  if (target.username === sender.username) return res.status(400).json({ error: "You can't send coins to yourself." });
+  if (sender.balance < amt) return res.status(400).json({ error: "Not enough coins." });
+
+  sender.balance -= amt;
+  target.balance += amt;
+  db.saveUser(sender);
+  db.saveUser(target);
+
+  const transfer = {
+    id: sender.username + "-" + Date.now() + "-" + crypto.randomInt(0, 9999),
+    from: sender.username,
+    fromName: sender.name || sender.username,
+    to: target.username,
+    toName: target.name || target.username,
+    amount: amt,
+    createdAt: Date.now(),
+  };
+  db.addTransfer(transfer);
+
+  res.json({ transfer, user: publicUser(sender) });
+});
+
+app.get("/api/transfers/mine", auth, (req, res) => {
+  res.json({ transfers: db.getUserTransfers(req.username) });
+});
+
 /* ---------------------------- top-up requests ---------------------------- */
 app.post("/api/topup/request", auth, (req, res) => {
   const user = db.getUser(req.username);
