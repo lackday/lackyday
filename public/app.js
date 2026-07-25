@@ -154,7 +154,7 @@ function switchTab(tab) {
   document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("hidden", p.id !== "tab-" + tab));
   if (tab === "tickets") loadTickets();
   if (tab === "results") loadDraws();
-  if (tab === "wallet") loadMyTopups();
+  if (tab === "wallet") { loadMyTopups(); loadTransfers(); }
   if (tab === "admin") loadAdmin();
 }
 
@@ -245,6 +245,46 @@ async function loadTickets() {
 }
 
 /* wallet tab */
+document.getElementById("sendCoinsBtn").onclick = async () => {
+  const recipientInput = document.getElementById("sendRecipientInput");
+  const amountInput = document.getElementById("sendAmountInput");
+  const recipient = recipientInput.value.trim();
+  const amount = parseInt(amountInput.value, 10);
+  if (!recipient) return showToast("Enter the recipient's mobile or email.", "error");
+  if (!amount || amount <= 0) return showToast("Enter a valid amount first.", "error");
+  try {
+    const data = await api("/api/send", { method: "POST", body: JSON.stringify({ recipient, amount }) });
+    state.user = data.user;
+    document.getElementById("balanceText").textContent = data.user.balance.toLocaleString() + " coins";
+    recipientInput.value = "";
+    amountInput.value = "";
+    showToast("Sent " + amount + " coins to " + data.transfer.toName + ".", "success");
+    loadTransfers();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+async function loadTransfers() {
+  const data = await api("/api/transfers/mine");
+  const list = document.getElementById("transferList");
+  list.innerHTML = "";
+  if (data.transfers.length === 0) {
+    list.innerHTML = '<p class="empty-state">No transfers yet.</p>';
+    return;
+  }
+  data.transfers.forEach((t) => {
+    const row = document.createElement("div");
+    row.className = "row";
+    const isSender = t.from === state.user.username;
+    const label = isSender ? "To " + t.toName : "From " + t.fromName;
+    const amountHtml = isSender
+      ? '<span class="lost">-' + t.amount.toLocaleString() + " coins</span>"
+      : '<span class="won">+' + t.amount.toLocaleString() + " coins</span>";
+    const date = new Date(t.createdAt).toLocaleString();
+    row.innerHTML = `<div class="date">${date}</div><div class="empty-state">${label}</div><div>${amountHtml}</div>`;
+    list.appendChild(row);
+  });
+}
 document.getElementById("topupRequestBtn").onclick = async () => {
   const input = document.getElementById("topupAmountInput");
   const amount = parseInt(input.value, 10);
