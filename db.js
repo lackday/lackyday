@@ -13,6 +13,7 @@ function load() {
       jackpot: 1000,
       salesDates: [],
       topupRequests: [],
+      transfers: [],
     };
     fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
     fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
@@ -21,6 +22,7 @@ function load() {
   const state = JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
   if (!state.topupRequests) state.topupRequests = [];
   if (!state.mobileIndex) state.mobileIndex = {};
+  if (!state.transfers) state.transfers = [];
   return state;
 }
 
@@ -98,6 +100,16 @@ module.exports = {
   addJackpot(delta) {
     state.jackpot += delta;
     save();
+  },
+
+  addTransfer(t) {
+    state.transfers.push(t);
+    save();
+  },
+  getUserTransfers(username) {
+    return state.transfers
+      .filter((t) => t.from === username || t.to === username)
+      .sort((a, b) => b.createdAt - a.createdAt);
   },
 
   addTopupRequest(reqObj) {
