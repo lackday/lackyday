@@ -35,7 +35,7 @@ body {
 .logo-text { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.14em; font-size: 13px; color: var(--ink); font-weight: 600; }
 
 /* auth screen */
-.auth-wrap { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1000px; margin: 0 auto; padding: 64px 24px; align-items: center; }
+.auth-wrap { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1000px; margin: 0 auto; padding: 28px 24px 64px; align-items: center; }
 .auth-left { flex: 1 1 380px; min-width: 300px; }
 .auth-left h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(32px, 5vw, 48px); line-height: 1.08; margin: 24px 0 18px; color: var(--ink); }
 .sub { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 440px; }
@@ -163,3 +163,9 @@ input:focus { border-color: var(--gold); background: var(--card); }
 .hero-dots { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
 .hero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer; border: none; padding: 0; transition: all 0.2s; }
 .hero-dot.active { background: var(--gold); width: 22px; border-radius: 6px; }
+.auth-tabs-float {
+  max-width: 340px; margin: -28px auto 0; padding: 0 24px; position: relative; z-index: 5;
+}
+.auth-tabs-float .auth-tabs {
+  margin-bottom: 0; box-shadow: 0 14px 34px rgba(43,32,22,0.22); background: var(--card);
+}
