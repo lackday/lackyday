@@ -25,9 +25,29 @@ async function api(path, opts = {}) {
   return data;
 }
 
+/* ---------------------------- auth modal ---------------------------- */
+function openAuthModal() {
+  document.getElementById("authModalBackdrop").classList.remove("hidden");
+}
+function closeAuthModal() {
+  document.getElementById("authModalBackdrop").classList.add("hidden");
+}
+document.getElementById("authModalClose").onclick = closeAuthModal;
+document.getElementById("authModalBackdrop").onclick = (e) => {
+  if (e.target.id === "authModalBackdrop") closeAuthModal();
+};
+
 /* ---------------------------- auth screen ---------------------------- */
-document.getElementById("tabLogin").onclick = () => setAuthMode("login");
-document.getElementById("tabRegister").onclick = () => setAuthMode("register");
+document.getElementById("tabLogin").onclick = () => {
+  setAuthMode("login");
+  openAuthModal();
+};
+document.getElementById("tabRegister").onclick = () => {
+  setAuthMode("register");
+  openAuthModal();
+};
+document.getElementById("tabLoginInner").onclick = () => setAuthMode("login");
+document.getElementById("tabRegisterInner").onclick = () => setAuthMode("register");
 document.getElementById("showAdminCodeLink").onclick = () => {
   document.getElementById("adminCodeWrap").classList.remove("hidden");
   document.getElementById("showAdminCodeLink").classList.add("hidden");
@@ -37,6 +57,8 @@ function setAuthMode(mode) {
   state.authMode = mode;
   document.getElementById("tabLogin").className = mode === "login" ? "tab-active" : "tab";
   document.getElementById("tabRegister").className = mode === "register" ? "tab-active" : "tab";
+  document.getElementById("tabLoginInner").className = mode === "login" ? "tab-active" : "tab";
+  document.getElementById("tabRegisterInner").className = mode === "register" ? "tab-active" : "tab";
   document.getElementById("authSubmit").textContent = mode === "login" ? "Log in" : "Create account";
   document.getElementById("registerNote").classList.toggle("hidden", mode !== "register");
   document.getElementById("showAdminCodeLink").classList.toggle("hidden", mode !== "register");
